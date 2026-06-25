@@ -3,230 +3,318 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Teminat Group - Dava Takip</title>
+  <title>Teminat Group – Dava Takip</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-
   <style>
     :root {
-      --navy: #1a3c5e;
-      --gold: #c8a84b;
-      --navy-light: #234d78;
-      --sidebar-w: 255px;
+      --navy:#1a3c5e; --navy2:#234d78; --gold:#c8a84b;
+      --sidebar:240px; --drawer:420px;
+      --bg:#f0f2f7; --card:#fff;
+      --radius:12px; --shadow:0 2px 8px rgba(0,0,0,.08);
     }
-    * { box-sizing: border-box; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #eef1f6; margin: 0; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#222}
 
     /* ── Sidebar ── */
-    .sidebar {
-      width: var(--sidebar-w);
-      min-height: 100vh;
-      background: var(--navy);
-      position: fixed; left: 0; top: 0;
-      display: flex; flex-direction: column;
-      z-index: 1040;
-      overflow-y: auto;
+    .sidebar{
+      width:var(--sidebar);min-height:100vh;
+      background:var(--navy);position:fixed;left:0;top:0;
+      display:flex;flex-direction:column;z-index:200;overflow-y:auto;
     }
-    .sidebar-logo {
-      padding: 18px 20px 14px;
-      border-bottom: 1px solid rgba(255,255,255,.1);
+    .logo{padding:20px 16px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .logo .brand{color:var(--gold);font-size:.95rem;font-weight:700;letter-spacing:.3px}
+    .logo .sub{color:rgba(255,255,255,.4);font-size:.68rem;margin-top:2px}
+    .sec-label{
+      padding:16px 16px 4px;font-size:.6rem;letter-spacing:1.5px;
+      color:rgba(255,255,255,.3);text-transform:uppercase
     }
-    .sidebar-logo .brand { color: var(--gold); font-size: 1rem; font-weight: 700; }
-    .sidebar-logo .sub { color: rgba(255,255,255,.5); font-size: .72rem; }
-    .nav-section-label {
-      padding: 14px 18px 4px;
-      font-size: .65rem; letter-spacing: 1.2px;
-      color: rgba(255,255,255,.35); text-transform: uppercase;
+    .nav-link-item{
+      display:flex;align-items:center;gap:9px;padding:9px 16px;
+      color:rgba(255,255,255,.7);text-decoration:none;font-size:.82rem;
+      border-left:3px solid transparent;transition:all .15s;cursor:pointer;
     }
-    .sidebar a.nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 9px 20px;
-      color: rgba(255,255,255,.72);
-      text-decoration: none; font-size: .855rem;
-      transition: all .15s;
-      border-left: 3px solid transparent;
-    }
-    .sidebar a.nav-item:hover { color: #fff; background: rgba(255,255,255,.07); }
-    .sidebar a.nav-item.active {
-      color: #fff; background: rgba(255,255,255,.1);
-      border-left-color: var(--gold);
-    }
-    .sidebar a.nav-item .badge-count {
-      margin-left: auto; background: rgba(255,255,255,.15);
-      color: rgba(255,255,255,.8); font-size: .65rem;
-      padding: 2px 7px; border-radius: 10px;
+    .nav-link-item:hover{color:#fff;background:rgba(255,255,255,.06)}
+    .nav-link-item.active{color:#fff;background:rgba(255,255,255,.1);border-left-color:var(--gold)}
+    .nav-link-item .cnt{
+      margin-left:auto;background:rgba(255,255,255,.12);
+      color:rgba(255,255,255,.75);font-size:.62rem;
+      padding:1px 7px;border-radius:10px;min-width:22px;text-align:center;
     }
 
-    /* ── Main ── */
-    .main {
-      margin-left: var(--sidebar-w);
-      min-height: 100vh;
-      display: flex; flex-direction: column;
+    /* ── Layout ── */
+    .main{margin-left:var(--sidebar);min-height:100vh;display:flex;flex-direction:column}
+    .topbar{
+      background:#fff;padding:10px 20px;
+      display:flex;align-items:center;justify-content:space-between;
+      border-bottom:1px solid #e2e6ef;position:sticky;top:0;z-index:100;
     }
-    .topbar {
-      background: #fff;
-      padding: 10px 24px;
-      display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid #dde2ec;
-      position: sticky; top: 0; z-index: 100;
-    }
-    .topbar-title { font-weight: 600; color: var(--navy); font-size: .95rem; }
-    .content { padding: 22px 24px; flex: 1; }
+    .topbar-title{font-weight:600;color:var(--navy);font-size:.9rem}
+    .content{padding:20px;flex:1}
 
-    /* ── Stat Cards ── */
-    .stat-card {
-      background: #fff; border-radius: 10px; padding: 18px 20px;
-      box-shadow: 0 1px 4px rgba(0,0,0,.06);
-      border-left: 4px solid var(--navy);
-    }
-    .stat-card.green  { border-left-color: #27ae60; }
-    .stat-card.amber  { border-left-color: #e67e22; }
-    .stat-card.red    { border-left-color: #e74c3c; }
-    .stat-card.gold   { border-left-color: var(--gold); }
-    .stat-card .num   { font-size: 2rem; font-weight: 700; color: var(--navy); line-height: 1.1; }
-    .stat-card .lbl   { font-size: .75rem; color: #888; margin-top: 3px; }
-    .stat-card .icon  { font-size: 1.6rem; color: #d1d9e6; }
+    /* ── Pages ── */
+    .page{display:none}.page.active{display:block}
 
-    /* ── Content panels ── */
-    .panel {
-      background: #fff; border-radius: 10px;
-      box-shadow: 0 1px 4px rgba(0,0,0,.06);
-      overflow: hidden;
+    /* ── Stat cards ── */
+    .stat-card{
+      background:#fff;border-radius:var(--radius);padding:16px 18px;
+      box-shadow:var(--shadow);border-left:4px solid var(--navy);
     }
-    .panel-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 18px; border-bottom: 1px solid #eee;
-    }
-    .panel-header h6 { margin: 0; color: var(--navy); font-weight: 600; }
-    .panel-body { padding: 16px 18px; }
+    .stat-card.g{border-left-color:#22c55e}
+    .stat-card.a{border-left-color:#f59e0b}
+    .stat-card.r{border-left-color:#ef4444}
+    .stat-card.gold{border-left-color:var(--gold)}
+    .stat-num{font-size:2rem;font-weight:700;color:var(--navy);line-height:1}
+    .stat-lbl{font-size:.7rem;color:#999;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+    .stat-icon{font-size:1.4rem;color:#dde3ef}
 
-    /* ── Page sections ── */
-    .page { display: none; }
-    .page.active { display: block; }
+    /* ── Panel ── */
+    .panel{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .panel-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:13px 16px;border-bottom:1px solid #eef0f5;
+    }
+    .panel-head h6{margin:0;color:var(--navy);font-size:.88rem;font-weight:600}
+    .panel-body{padding:16px}
 
     /* ── Table ── */
-    table.dataTable { font-size: .82rem; }
-    table.dataTable thead th {
-      background: #f5f7fa; color: var(--navy);
-      font-weight: 600; font-size: .78rem;
-      white-space: nowrap;
+    .tbl-wrap{overflow-x:auto}
+    table.dtbl{width:100%;border-collapse:collapse;font-size:.8rem}
+    table.dtbl thead th{
+      background:#f7f8fc;color:var(--navy);font-weight:600;
+      font-size:.73rem;text-transform:uppercase;letter-spacing:.4px;
+      padding:9px 12px;border-bottom:2px solid #e8eaf0;white-space:nowrap;
+      cursor:pointer;user-select:none;
     }
-    table.dataTable td { vertical-align: middle; }
-    .dt-container { overflow-x: auto; }
-
-    /* ── Status badges ── */
-    .sbadge {
-      display: inline-block; padding: 2px 9px;
-      border-radius: 12px; font-size: .72rem; font-weight: 500;
-      white-space: nowrap;
+    table.dtbl thead th:hover{background:#eef0f8}
+    table.dtbl thead th.sort-asc::after{content:' ↑';color:var(--gold)}
+    table.dtbl thead th.sort-desc::after{content:' ↓';color:var(--gold)}
+    table.dtbl tbody tr{
+      border-bottom:1px solid #f2f3f8;cursor:pointer;
+      transition:background .1s;
     }
-    .sbadge-icra     { background: #fff3cd; color: #856404; }
-    .sbadge-tahkim   { background: #cfe2ff; color: #084298; }
-    .sbadge-arabuluculuk { background: #d1e7dd; color: #0a3622; }
-    .sbadge-tamamlandi { background: #d1e7dd; color: #0a3622; }
-    .sbadge-hukuki   { background: #f8d7da; color: #58151c; }
-    .sbadge-default  { background: #e2e3e5; color: #41464b; }
+    table.dtbl tbody tr:hover{background:#f5f7fd}
+    table.dtbl tbody tr.selected{background:#eef3ff}
+    table.dtbl td{padding:8px 12px;vertical-align:middle;color:#333}
+    table.dtbl .td-actions{text-align:center;width:80px}
 
-    /* ── Modal ── */
-    .modal-header {
-      background: var(--navy); color: #fff;
-      padding: 12px 18px;
+    /* ── Status badge ── */
+    .sbadge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:600;white-space:nowrap}
+    .s-icra    {background:#fef3c7;color:#92400e}
+    .s-tahkim  {background:#dbeafe;color:#1e40af}
+    .s-arb     {background:#dcfce7;color:#166534}
+    .s-tamam   {background:#d1fae5;color:#065f46}
+    .s-hukuki  {background:#fee2e2;color:#991b1b}
+    .s-bekle   {background:#e0e7ff;color:#3730a3}
+    .s-diger   {background:#f3f4f6;color:#374151}
+
+    /* ── Search/filter bar ── */
+    .filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+    .filter-bar input{
+      flex:1;min-width:180px;padding:7px 12px;
+      border:1px solid #e2e6ef;border-radius:8px;font-size:.82rem;outline:none;
     }
-    .modal-header .btn-close { filter: invert(1) brightness(2); }
-    .form-label { font-size: .78rem; font-weight: 600; color: #555; margin-bottom: 3px; }
-    .form-control, .form-select { font-size: .83rem; }
+    .filter-bar input:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,60,94,.1)}
+    .filter-chip{
+      padding:5px 12px;border-radius:20px;font-size:.72rem;font-weight:500;
+      cursor:pointer;border:1px solid #e2e6ef;background:#fff;color:#666;
+      transition:all .15s;white-space:nowrap;
+    }
+    .filter-chip:hover,.filter-chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 
-    /* ── Search highlight ── */
-    mark { background: #fff3cd; padding: 0 2px; border-radius: 2px; }
+    /* ── Pagination ── */
+    .pager{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid #f0f2f8;font-size:.78rem;color:#888}
+    .pager-btns{display:flex;gap:4px}
+    .pager-btn{
+      padding:4px 10px;border-radius:6px;border:1px solid #e2e6ef;
+      background:#fff;cursor:pointer;font-size:.75rem;
+    }
+    .pager-btn:hover{background:#f5f7fd}
+    .pager-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .pager-btn:disabled{opacity:.4;cursor:not-allowed}
+
+    /* ── Detail Drawer ── */
+    .drawer-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:300;
+      opacity:0;pointer-events:none;transition:opacity .2s;
+    }
+    .drawer-overlay.open{opacity:1;pointer-events:all}
+    .drawer{
+      position:fixed;top:0;right:0;bottom:0;width:var(--drawer);
+      background:#fff;z-index:301;
+      transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);
+      display:flex;flex-direction:column;
+    }
+    .drawer.open{transform:none}
+    .drawer-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 18px;background:var(--navy);color:#fff;flex-shrink:0;
+    }
+    .drawer-head h6{margin:0;font-size:.9rem;font-weight:600}
+    .drawer-body{flex:1;overflow-y:auto;padding:16px}
+    .drawer-foot{
+      padding:12px 16px;border-top:1px solid #eee;
+      display:flex;gap:8px;flex-shrink:0;
+    }
+    .field-group{margin-bottom:18px}
+    .field-group-title{
+      font-size:.65rem;letter-spacing:1px;text-transform:uppercase;
+      color:#999;font-weight:600;margin-bottom:10px;
+      padding-bottom:6px;border-bottom:1px solid #f0f2f8;
+    }
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-bottom:4px}
+    .field-row.full{grid-template-columns:1fr}
+    .field-item label{display:block;font-size:.68rem;color:#999;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+    .field-item .val{font-size:.83rem;color:#222;font-weight:500}
+    .field-item .val.empty{color:#bbb;font-style:italic;font-weight:400}
+
+    /* ── Form Modal ── */
+    .modal-header{background:var(--navy);color:#fff;padding:13px 18px}
+    .modal-header .btn-close{filter:invert(1) brightness(2)}
+    .form-section{margin-bottom:20px}
+    .form-section-title{
+      font-size:.68rem;letter-spacing:1px;text-transform:uppercase;
+      color:var(--navy);font-weight:700;margin-bottom:10px;
+      padding:6px 10px;background:#f0f4fa;border-radius:6px;
+      border-left:3px solid var(--gold);
+    }
+    .form-row{display:grid;gap:10px;margin-bottom:10px}
+    .form-row.col2{grid-template-columns:1fr 1fr}
+    .form-row.col3{grid-template-columns:1fr 1fr 1fr}
+    .form-row.col1{grid-template-columns:1fr}
+    .form-label{font-size:.73rem;font-weight:600;color:#555;margin-bottom:3px;display:block}
+    .form-control,.form-select{font-size:.82rem;border-radius:7px;border:1px solid #dde2ef;padding:7px 10px}
+    .form-control:focus,.form-select:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,60,94,.1)}
+
+    /* ── Confirm dialog ── */
+    .confirm-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;
+      display:none;align-items:center;justify-content:center;
+    }
+    .confirm-overlay.open{display:flex}
+    .confirm-box{background:#fff;border-radius:var(--radius);padding:28px;max-width:360px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+    .confirm-box h5{color:var(--navy);margin-bottom:8px;font-size:1rem}
+    .confirm-box p{color:#666;font-size:.83rem;margin-bottom:20px}
 
     /* ── Toast ── */
-    .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+    .toast-wrap{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+    .toast-item{
+      background:#fff;border-radius:10px;padding:11px 16px;
+      box-shadow:0 4px 16px rgba(0,0,0,.15);font-size:.82rem;
+      display:flex;align-items:center;gap:10px;min-width:260px;
+      animation:slideUp .25s ease;
+    }
+    @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+    .toast-item.success .ti{color:#22c55e}
+    .toast-item.danger  .ti{color:#ef4444}
+    .toast-item.info    .ti{color:#3b82f6}
 
-    /* ── Loading ── */
-    .spinner-box { text-align: center; padding: 40px; color: #aaa; }
+    /* ── Spinner ── */
+    .spin-center{text-align:center;padding:50px;color:#bbb}
+    .spin-center i{font-size:2rem}
 
-    /* ── Mini action buttons ── */
-    .btn-mini { padding: 2px 7px; font-size: .72rem; }
+    /* ── Btn ── */
+    .btn-navy{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:.82rem;font-weight:500;cursor:pointer;transition:background .15s}
+    .btn-navy:hover{background:var(--navy2)}
+    .btn-outline-navy{background:transparent;color:var(--navy);border:1px solid var(--navy);border-radius:8px;padding:7px 16px;font-size:.82rem;font-weight:500;cursor:pointer;transition:all .15s}
+    .btn-outline-navy:hover{background:var(--navy);color:#fff}
+    .btn-danger-soft{background:#fee2e2;color:#991b1b;border:none;border-radius:8px;padding:7px 16px;font-size:.82rem;cursor:pointer}
+    .btn-danger-soft:hover{background:#fecaca}
+    .btn-gold{background:var(--gold);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:.82rem;cursor:pointer}
+    .btn-sm-icon{background:none;border:1px solid #e2e6ef;border-radius:6px;padding:4px 8px;cursor:pointer;color:#666;font-size:.75rem;transition:all .15s}
+    .btn-sm-icon:hover{background:#f5f7fd;color:var(--navy)}
+    .btn-sm-icon.danger:hover{background:#fee2e2;color:#991b1b;border-color:#fecaca}
 
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); transition: transform .25s; }
-      .sidebar.open { transform: none; }
-      .main { margin-left: 0; }
+    /* ── Dash category list ── */
+    .cat-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f3f4f8}
+    .cat-row:last-child{border:none}
+    .cat-name{font-size:.83rem;color:#444}
+    .cat-pill{background:var(--navy);color:#fff;font-size:.68rem;padding:2px 10px;border-radius:10px}
+
+    @media(max-width:768px){
+      .sidebar{transform:translateX(-100%);transition:transform .25s}
+      .sidebar.open{transform:none}
+      .main{margin-left:0}
+      .drawer{width:100%}
+      .form-row.col2,.form-row.col3{grid-template-columns:1fr}
     }
   </style>
 </head>
 <body>
 
-<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
-<nav class="sidebar">
-  <div class="sidebar-logo">
+<!-- ═══ SIDEBAR ═══ -->
+<nav class="sidebar" id="sidebar">
+  <div class="logo">
     <div class="brand"><i class="fas fa-balance-scale me-2"></i>Dava Takip</div>
     <div class="sub">Teminat Group Hukuk Sistemi</div>
   </div>
 
-  <a class="nav-item active" href="#" onclick="nav('dashboard',this)">
-    <i class="fas fa-tachometer-alt fa-fw"></i> Dashboard
+  <a class="nav-link-item active" onclick="nav('dashboard',this)">
+    <i class="fas fa-home fa-fw"></i> Ana Sayfa
   </a>
 
-  <div class="nav-section-label">Hasar Dosyaları</div>
-  <a class="nav-item" href="#" onclick="nav('oto-hasar',this)" data-sheet="OTO HASAR">
+  <div class="sec-label">Hasar Dosyaları</div>
+  <a class="nav-link-item" onclick="nav('oto-hasar',this)" data-sheet="OTO HASAR">
     <i class="fas fa-car-crash fa-fw"></i> Oto Hasar
-    <span class="badge-count" id="cnt-OTO HASAR">…</span>
+    <span class="cnt" id="cnt-OTO HASAR">–</span>
   </a>
-  <a class="nav-item" href="#" onclick="nav('oto-disi',this)" data-sheet="OTO DIŞI HASAR">
+  <a class="nav-link-item" onclick="nav('oto-disi',this)" data-sheet="OTO DIŞI HASAR">
     <i class="fas fa-house-damage fa-fw"></i> Oto Dışı Hasar
-    <span class="badge-count" id="cnt-OTO DIŞI HASAR">…</span>
+    <span class="cnt" id="cnt-OTO DIŞI HASAR">–</span>
   </a>
 
-  <div class="nav-section-label">Dava Takip</div>
-  <a class="nav-item" href="#" onclick="nav('deger-kaybi',this)" data-sheet="DEĞER KAYBI">
+  <div class="sec-label">Dava Takip</div>
+  <a class="nav-link-item" onclick="nav('deger-kaybi',this)" data-sheet="DEĞER KAYBI">
     <i class="fas fa-chart-line fa-fw"></i> Değer Kaybı
-    <span class="badge-count" id="cnt-DEĞER KAYBI">…</span>
+    <span class="cnt" id="cnt-DEĞER KAYBI">–</span>
   </a>
-  <a class="nav-item" href="#" onclick="nav('hak-mahrumiyeti',this)" data-sheet="HAK MAHRUMİYETİ">
+  <a class="nav-link-item" onclick="nav('hak-mahrumiyeti',this)" data-sheet="HAK MAHRUMİYETİ">
     <i class="fas fa-ban fa-fw"></i> Hak Mahrumiyet
-    <span class="badge-count" id="cnt-HAK MAHRUMİYETİ">…</span>
+    <span class="cnt" id="cnt-HAK MAHRUMİYETİ">–</span>
   </a>
-  <a class="nav-item" href="#" onclick="nav('hasar-farki',this)" data-sheet="HASAR FARKI">
+  <a class="nav-link-item" onclick="nav('hasar-farki',this)" data-sheet="HASAR FARKI">
     <i class="fas fa-exchange-alt fa-fw"></i> Hasar Farkı
-    <span class="badge-count" id="cnt-HASAR FARKI">…</span>
+    <span class="cnt" id="cnt-HASAR FARKI">–</span>
   </a>
-  <a class="nav-item" href="#" onclick="nav('kazanc-kaybi',this)" data-sheet="KAZANÇ KAYBI">
+  <a class="nav-link-item" onclick="nav('kazanc-kaybi',this)" data-sheet="KAZANÇ KAYBI">
     <i class="fas fa-coins fa-fw"></i> Kazanç Kaybı
-    <span class="badge-count" id="cnt-KAZANÇ KAYBI">…</span>
+    <span class="cnt" id="cnt-KAZANÇ KAYBI">–</span>
   </a>
-  <a class="nav-item" href="#" onclick="nav('dask',this)" data-sheet="DASK">
+  <a class="nav-link-item" onclick="nav('dask',this)" data-sheet="DASK">
     <i class="fas fa-shield-halved fa-fw"></i> DASK
-    <span class="badge-count" id="cnt-DASK">…</span>
+    <span class="cnt" id="cnt-DASK">–</span>
   </a>
-  <a class="nav-item" href="#" onclick="nav('ayipli-mal',this)" data-sheet="AYIPLI MAL">
+  <a class="nav-link-item" onclick="nav('ayipli-mal',this)" data-sheet="AYIPLI MAL">
     <i class="fas fa-triangle-exclamation fa-fw"></i> Ayıplı Mal
-    <span class="badge-count" id="cnt-AYIPLI MAL">…</span>
+    <span class="cnt" id="cnt-AYIPLI MAL">–</span>
   </a>
 
-  <div class="nav-section-label">Araçlar</div>
-  <a class="nav-item" href="#" onclick="nav('search',this)">
+  <div class="sec-label">Araçlar</div>
+  <a class="nav-link-item" onclick="nav('search',this)">
     <i class="fas fa-magnifying-glass fa-fw"></i> Genel Arama
   </a>
-  <a class="nav-item" href="#" onclick="doInitSheets()">
+  <a class="nav-link-item" onclick="doInitSheets()">
     <i class="fas fa-database fa-fw"></i> Sayfaları Hazırla
   </a>
 </nav>
 
-<!-- ═══════════════════ MAIN ═══════════════════════ -->
+<!-- ═══ MAIN ═══ -->
 <div class="main">
+
   <div class="topbar">
-    <div class="topbar-title" id="topbarTitle">
-      <i class="fas fa-tachometer-alt me-1 text-muted"></i> Dashboard
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn-sm-icon" id="mobileMenuBtn" onclick="toggleSidebar()" style="display:none">
+        <i class="fas fa-bars"></i>
+      </button>
+      <span class="topbar-title" id="topbarTitle">Ana Sayfa</span>
     </div>
-    <div class="d-flex align-items-center gap-2">
-      <span class="text-muted" style="font-size:.8rem" id="todayDate"></span>
-      <a href="https://teminatdegerkaybi.com" target="_blank" class="btn btn-sm btn-outline-secondary" style="font-size:.75rem">
-        <i class="fas fa-external-link-alt"></i> teminatdegerkaybi.com
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:.75rem;color:#aaa" id="todayDate"></span>
+      <a href="https://teminatdegerkaybi.com" target="_blank" class="btn-sm-icon" title="teminatdegerkaybi.com">
+        <i class="fas fa-external-link-alt"></i>
       </a>
-      <a href="https://www.teminatgroup.com" target="_blank" class="btn btn-sm btn-outline-secondary" style="font-size:.75rem">
-        <i class="fas fa-external-link-alt"></i> teminatgroup.com
+      <a href="https://www.teminatgroup.com" target="_blank" class="btn-sm-icon" title="teminatgroup.com">
+        <i class="fas fa-globe"></i>
       </a>
     </div>
   </div>
@@ -235,107 +323,83 @@
 
     <!-- ─── DASHBOARD ─── -->
     <div id="page-dashboard" class="page active">
-      <div class="row g-3 mb-4">
-        <div class="col-6 col-lg-3">
-          <div class="stat-card">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <div class="lbl">TOPLAM KAYIT</div>
-                <div class="num" id="s-total">—</div>
-              </div>
-              <div class="icon"><i class="fas fa-folder-open"></i></div>
-            </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px" class="stat-grid">
+        <div class="stat-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div class="stat-lbl">Toplam Kayıt</div><div class="stat-num" id="s-total">–</div></div>
+            <div class="stat-icon"><i class="fas fa-folder-open"></i></div>
           </div>
         </div>
-        <div class="col-6 col-lg-3">
-          <div class="stat-card green">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <div class="lbl">AKTİF DAVALAR</div>
-                <div class="num" id="s-active">—</div>
-              </div>
-              <div class="icon"><i class="fas fa-spinner"></i></div>
-            </div>
+        <div class="stat-card g">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div class="stat-lbl">Aktif Davalar</div><div class="stat-num" id="s-active">–</div></div>
+            <div class="stat-icon"><i class="fas fa-spinner"></i></div>
           </div>
         </div>
-        <div class="col-6 col-lg-3">
-          <div class="stat-card amber">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <div class="lbl">TAMAMLANAN</div>
-                <div class="num" id="s-done">—</div>
-              </div>
-              <div class="icon"><i class="fas fa-check-circle"></i></div>
-            </div>
+        <div class="stat-card a">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div class="stat-lbl">Tamamlanan</div><div class="stat-num" id="s-done">–</div></div>
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
           </div>
         </div>
-        <div class="col-6 col-lg-3">
-          <div class="stat-card gold">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <div class="lbl">HASAR DOSYALARI</div>
-                <div class="num" id="s-hasar">—</div>
-              </div>
-              <div class="icon"><i class="fas fa-car"></i></div>
-            </div>
+        <div class="stat-card gold">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div class="stat-lbl">Hasar Dosyaları</div><div class="stat-num" id="s-hasar">–</div></div>
+            <div class="stat-icon"><i class="fas fa-car"></i></div>
           </div>
         </div>
       </div>
 
-      <div class="row g-3">
-        <div class="col-md-7">
-          <div class="panel">
-            <div class="panel-header"><h6><i class="fas fa-list-ul me-1"></i>Kategori Özeti</h6></div>
-            <div class="panel-body" id="dash-categories">
-              <div class="spinner-box"><i class="fas fa-spinner fa-spin"></i> Yükleniyor…</div>
-            </div>
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:16px">
+        <div class="panel">
+          <div class="panel-head"><h6><i class="fas fa-list-ul me-2"></i>Kategori Özeti</h6></div>
+          <div class="panel-body" id="dash-categories">
+            <div class="spin-center"><i class="fas fa-spinner fa-spin"></i></div>
           </div>
         </div>
-        <div class="col-md-5">
-          <div class="panel h-100">
-            <div class="panel-header"><h6><i class="fas fa-bolt me-1"></i>Hızlı Erişim</h6></div>
-            <div class="panel-body d-grid gap-2">
-              <button class="btn btn-outline-primary text-start btn-sm" onclick="nav('deger-kaybi',null)">
-                <i class="fas fa-chart-line me-2"></i>Değer Kaybı Davaları
-              </button>
-              <button class="btn btn-outline-primary text-start btn-sm" onclick="nav('hak-mahrumiyeti',null)">
-                <i class="fas fa-ban me-2"></i>Hak Mahrumiyet Davaları
-              </button>
-              <button class="btn btn-outline-primary text-start btn-sm" onclick="nav('oto-hasar',null)">
-                <i class="fas fa-car-crash me-2"></i>Oto Hasar Dosyaları
-              </button>
-              <button class="btn btn-outline-primary text-start btn-sm" onclick="nav('dask',null)">
-                <i class="fas fa-shield-halved me-2"></i>DASK Davaları
-              </button>
-              <button class="btn btn-outline-primary text-start btn-sm" onclick="nav('search',null)">
-                <i class="fas fa-magnifying-glass me-2"></i>TC / Plaka / Ad ile Ara
-              </button>
-            </div>
+        <div class="panel">
+          <div class="panel-head"><h6><i class="fas fa-bolt me-2"></i>Hızlı Erişim</h6></div>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn-outline-navy" style="text-align:left" onclick="nav('deger-kaybi',null)">
+              <i class="fas fa-chart-line me-2"></i>Değer Kaybı Davaları
+            </button>
+            <button class="btn-outline-navy" style="text-align:left" onclick="nav('hak-mahrumiyeti',null)">
+              <i class="fas fa-ban me-2"></i>Hak Mahrumiyet Davaları
+            </button>
+            <button class="btn-outline-navy" style="text-align:left" onclick="nav('oto-hasar',null)">
+              <i class="fas fa-car-crash me-2"></i>Oto Hasar Dosyaları
+            </button>
+            <button class="btn-outline-navy" style="text-align:left" onclick="nav('dask',null)">
+              <i class="fas fa-shield-halved me-2"></i>DASK Davaları
+            </button>
+            <button class="btn-gold" style="text-align:left" onclick="nav('search',null)">
+              <i class="fas fa-magnifying-glass me-2"></i>TC / Plaka / Ad ile Ara
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ─── SHEET PAGES (generated dynamically) ─── -->
-    <div id="page-oto-hasar"        class="page"><div class="spinner-box"><i class="fas fa-spinner fa-spin"></i></div></div>
-    <div id="page-oto-disi"         class="page"><div class="spinner-box"><i class="fas fa-spinner fa-spin"></i></div></div>
-    <div id="page-deger-kaybi"      class="page"><div class="spinner-box"><i class="fas fa-spinner fa-spin"></i></div></div>
-    <div id="page-hak-mahrumiyeti"  class="page"><div class="spinner-box"><i class="fas fa-spinner fa-spin"></i></div></div>
-    <div id="page-hasar-farki"      class="page"><div class="spinner-box"><i class="fas fa-spinner fa-spin"></i></div></div>
-    <div id="page-kazanc-kaybi"     class="page"><div class="spinner-box"><i class="fas fa-spinner fa-spin"></i></div></div>
-    <div id="page-dask"             class="page"><div class="spinner-box"><i class="fas fa-spinner fa-spin"></i></div></div>
-    <div id="page-ayipli-mal"       class="page"><div class="spinner-box"><i class="fas fa-spinner fa-spin"></i></div></div>
+    <!-- ─── SHEET PAGES ─── -->
+    <div id="page-oto-hasar"        class="page"><div class="spin-center"><i class="fas fa-spinner fa-spin"></i></div></div>
+    <div id="page-oto-disi"         class="page"><div class="spin-center"><i class="fas fa-spinner fa-spin"></i></div></div>
+    <div id="page-deger-kaybi"      class="page"><div class="spin-center"><i class="fas fa-spinner fa-spin"></i></div></div>
+    <div id="page-hak-mahrumiyeti"  class="page"><div class="spin-center"><i class="fas fa-spinner fa-spin"></i></div></div>
+    <div id="page-hasar-farki"      class="page"><div class="spin-center"><i class="fas fa-spinner fa-spin"></i></div></div>
+    <div id="page-kazanc-kaybi"     class="page"><div class="spin-center"><i class="fas fa-spinner fa-spin"></i></div></div>
+    <div id="page-dask"             class="page"><div class="spin-center"><i class="fas fa-spinner fa-spin"></i></div></div>
+    <div id="page-ayipli-mal"       class="page"><div class="spin-center"><i class="fas fa-spinner fa-spin"></i></div></div>
 
     <!-- ─── SEARCH ─── -->
     <div id="page-search" class="page">
       <div class="panel">
-        <div class="panel-header"><h6><i class="fas fa-magnifying-glass me-1"></i>Genel Arama</h6></div>
+        <div class="panel-head"><h6><i class="fas fa-magnifying-glass me-2"></i>Genel Arama</h6></div>
         <div class="panel-body">
-          <div class="input-group mb-3">
+          <div style="display:flex;gap:8px;margin-bottom:16px">
             <input type="text" id="searchQ" class="form-control"
-                   placeholder="TC kimlik no, plaka, ad soyad, dosya no, sigorta şirketi…"
-                   onkeydown="if(event.key==='Enter') runSearch()">
-            <button class="btn btn-primary" onclick="runSearch()">
+              placeholder="TC kimlik no, plaka, ad soyad, sigorta şirketi, dosya no…"
+              onkeydown="if(event.key==='Enter')runSearch()" style="flex:1">
+            <button class="btn-navy" onclick="runSearch()" style="padding:7px 20px">
               <i class="fas fa-search me-1"></i>Ara
             </button>
           </div>
@@ -344,451 +408,637 @@
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
+  </div>
+</div>
 
-<!-- ═══════════════════ MODAL ═══════════════════════ -->
+<!-- ═══ DRAWER OVERLAY ═══ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- ═══ DETAIL DRAWER ═══ -->
+<div class="drawer" id="detailDrawer">
+  <div class="drawer-head">
+    <h6 id="drawerTitle">Kayıt Detayı</h6>
+    <button class="btn-sm-icon" onclick="closeDrawer()" style="color:#fff;border-color:rgba(255,255,255,.3)">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot">
+    <button class="btn-navy" onclick="openEditFromDrawer()" style="flex:1">
+      <i class="fas fa-pen me-2"></i>Düzenle
+    </button>
+    <button class="btn-danger-soft" onclick="delFromDrawer()">
+      <i class="fas fa-trash"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ═══ ADD/EDIT MODAL ═══ -->
 <div class="modal fade" id="recModal" tabindex="-1">
-  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h6 class="modal-title mb-0" id="modalTitle">Kayıt</h6>
+        <h6 class="modal-title mb-0" id="modalTitle">Yeni Kayıt</h6>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body" id="modalBody"></div>
-      <div class="modal-footer py-2">
-        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">İptal</button>
-        <button class="btn btn-primary btn-sm" id="modalSaveBtn" onclick="saveRecord()">
-          <i class="fas fa-save me-1"></i>Kaydet
+      <div class="modal-body" id="modalBody" style="padding:20px"></div>
+      <div class="modal-footer" style="padding:10px 16px;gap:8px">
+        <button class="btn-outline-navy" data-bs-dismiss="modal">İptal</button>
+        <button class="btn-navy" id="modalSaveBtn" onclick="saveRecord()">
+          <i class="fas fa-save me-2"></i>Kaydet
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════ TOAST ════════════════════════ -->
-<div class="toast-container"></div>
+<!-- ═══ CONFIRM DIALOG ═══ -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"><i class="fas fa-trash-alt"></i></div>
+    <h5>Kaydı Sil</h5>
+    <p>Bu kaydı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</p>
+    <div style="display:flex;gap:8px;justify-content:center">
+      <button class="btn-outline-navy" onclick="closeConfirm()">İptal</button>
+      <button class="btn-danger-soft" id="confirmYesBtn" style="padding:7px 20px">Evet, Sil</button>
+    </div>
+  </div>
+</div>
 
-<!-- ═══════════════════ SCRIPTS ═══════════════════════ -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- ═══ TOAST ═══ -->
+<div class="toast-wrap" id="toastWrap"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-
 <script>
-// ─── Config ──────────────────────────────────────────
+// ─── Config ────────────────────────────────────────────────────────────────
 const PAGE_CONFIG = {
-  'oto-hasar':       { sheet:'OTO HASAR',        icon:'fa-car-crash',           title:'Oto Hasar Dosyaları' },
-  'oto-disi':        { sheet:'OTO DIŞI HASAR',   icon:'fa-house-damage',        title:'Oto Dışı Hasar Dosyaları' },
-  'deger-kaybi':     { sheet:'DEĞER KAYBI',       icon:'fa-chart-line',          title:'Değer Kaybı Davaları' },
-  'hak-mahrumiyeti': { sheet:'HAK MAHRUMİYETİ',  icon:'fa-ban',                 title:'Hak Mahrumiyet Davaları' },
-  'hasar-farki':     { sheet:'HASAR FARKI',       icon:'fa-exchange-alt',        title:'Hasar Farkı Davaları' },
-  'kazanc-kaybi':    { sheet:'KAZANÇ KAYBI',      icon:'fa-coins',               title:'Kazanç Kaybı Davaları' },
-  'dask':            { sheet:'DASK',              icon:'fa-shield-halved',       title:'DASK Davaları' },
-  'ayipli-mal':      { sheet:'AYIPLI MAL',        icon:'fa-triangle-exclamation',title:'Ayıplı Mal Davaları' }
+  'oto-hasar':       {sheet:'OTO HASAR',        icon:'fa-car-crash',            title:'Oto Hasar Dosyaları'},
+  'oto-disi':        {sheet:'OTO DIŞI HASAR',   icon:'fa-house-damage',         title:'Oto Dışı Hasar Dosyaları'},
+  'deger-kaybi':     {sheet:'DEĞER KAYBI',       icon:'fa-chart-line',           title:'Değer Kaybı Davaları'},
+  'hak-mahrumiyeti': {sheet:'HAK MAHRUMİYETİ',  icon:'fa-ban',                  title:'Hak Mahrumiyet Davaları'},
+  'hasar-farki':     {sheet:'HASAR FARKI',       icon:'fa-exchange-alt',         title:'Hasar Farkı Davaları'},
+  'kazanc-kaybi':    {sheet:'KAZANÇ KAYBI',      icon:'fa-coins',                title:'Kazanç Kaybı Davaları'},
+  'dask':            {sheet:'DASK',              icon:'fa-shield-halved',        title:'DASK Davaları'},
+  'ayipli-mal':      {sheet:'AYIPLI MAL',        icon:'fa-triangle-exclamation', title:'Ayıplı Mal Davaları'},
+};
+
+// Hangi sütunlar tabloda gösterilsin (her sayfa için özet sütunlar)
+const TABLE_COLS = {
+  'OTO HASAR':       ['SAYI','PLAKA','KAZA TARİHİ','ARAÇ SAHİBİ','SİGORTA ŞİRKETİ','TRAFİK/ KASKO','EKSPERİ','DURUM'],
+  'OTO DIŞI HASAR':  ['SAYI','ADRES','HASAR TARİHİ','SİGORTALI','SİGORTA ŞİRKETİ','DASK/KONUT','DURUM'],
+  'DEĞER KAYBI':     ['S NO','PLAKA','DAVACI','DAVALI','DAVALI SİGORTA','DOSYA DURUMU','KARAR TARİHİ'],
+  'HAK MAHRUMİYETİ': ['S NO','PLAKA','DAVACI','DAVALI','DAVALI SİGORTA','DOSYA DURUMU','KARAR TARİHİ'],
+  'HASAR FARKI':     ['S NO','PLAKA','DAVACI','DAVALI','DAVALI SİGORTA','DOSYA DURUMU','KARAR TARİHİ'],
+  'KAZANÇ KAYBI':    ['S NO','PLAKA','DAVACI','DAVALI','DOSYA DURUMU','KARAR TARİHİ'],
+  'DASK':            ['S NO','DAVACI','DAVALI SİGORTA','KONU DOSYA','TAHKİM DOSYA NUMARASI','DOSYA DURUMU'],
+  'AYIPLI MAL':      ['S NO','PLAKA','DAVACI','KONU DOSYA','DOSYA DURUMU','İCRA DOSYA NUM.'],
+};
+
+// Form grupları (başlık → alan listesi)
+const FORM_GROUPS = {
+  'OTO HASAR': [
+    {title:'Temel Bilgiler', fields:['PLAKA','ARAÇ SAHİBİ','T.C/V.N','TRAFİK/ KASKO']},
+    {title:'Sigorta Bilgileri', fields:['SİGORTA ŞİRKETİ','POLİÇE NO','DOSYA NUMARASI','EKSPERİ']},
+    {title:'Tarihler', fields:['DOSYA AÇILIŞ','KAZA TARİHİ']},
+    {title:'Durum & Ödeme', fields:['DURUM','ALINAN ÖDEME']},
+  ],
+  'OTO DIŞI HASAR': [
+    {title:'Temel Bilgiler', fields:['ADRES','SİGORTALI','T.C/V.N','DASK/KONUT']},
+    {title:'Sigorta Bilgileri', fields:['SİGORTA ŞİRKETİ','POLİÇE NO','DOSYA NUMARASI','EKSPERİ']},
+    {title:'Tarihler', fields:['DOSYA AÇILIŞ','HASAR TARİHİ']},
+    {title:'Durum & Ödeme', fields:['DURUM','ALINAN ÖDEME']},
+  ],
+  '_dava': [
+    {title:'Taraflar', fields:['PLAKA','TC','DAVACI','DAVALI','DAVALI SİGORTA']},
+    {title:'Dosya Bilgileri', fields:['DOSYA NO','KONU DOSYA','DOSYA BEDELİ']},
+    {title:'Sigorta Süreci', fields:['SİGORTA MÜRACAAT TARİHİ','SİGORTA DÖNÜŞ TARİHİ','GELEN BEDEL']},
+    {title:'Tahkim', fields:['TAHKİM MÜRACAAT TARİHİ','TAHKİM DOSYA NO','TAHKİM DOSYA NUMARASI','TAHKİM ÜCRETİ','BİLİRKİŞİ ÜCRETİ']},
+    {title:'Karar & İcra', fields:['DOSYA DURUMU','KARAR TARİHİ','İCRA DOSYA NUM.','İCRA TARİHİ','GELEN BEDEL2']},
+  ],
 };
 
 const DATE_FIELDS = new Set([
   'DOSYA AÇILIŞ','KAZA TARİHİ','HASAR TARİHİ',
   'SİGORTA MÜRACAAT TARİHİ','SİGORTA DÖNÜŞ TARİHİ',
-  'TAHKİM MÜRACAAT TARİHİ','KARAR TARİHİ','İCRA TARİHİ'
+  'TAHKİM MÜRACAAT TARİHİ','KARAR TARİHİ','İCRA TARİHİ',
 ]);
-
 const SELECT_FIELDS = {
-  'TRAFİK/KASKO':  ['','TRAFİK','KASKO'],
+  'TRAFİK/ KASKO': ['','TRAFİK','KASKO'],
   'DASK/KONUT':    ['','DASK','KONUT'],
   'KONU DOSYA':    ['','DEĞER KAYBI','HAK MAHRUMİYETİ','HASAR FARKI','KAZANÇ KAYBI','TAZMİNAT','AYIPLI MAL'],
-  'DURUM':         ['','İŞLEMDE','EKSPERTİZ AŞAMASINDA','TAHKİMDE','HUKUKİ İŞLEMLER BAŞLATILDI',
-                    'TAHKİMDEN ÖDEME ALINDI','KAPANDI'],
-  'DOSYA DURUMU':  ['','SİGORTAYA MÜRACAAT','TAHKİM KAYIT','TAHKİM İNCELEME','İNCELEME KABUL',
-                    'BİLİRKİŞİ','ARABULUCULUKTA','KARAR','İCRADA','TAMAMLANDI']
+  'DURUM':         ['','İŞLEMDE','EKSPERTİZ AŞAMASINDA','TAHKİMDE','HUKUKİ İŞLEMLER BAŞLATILDI','TAHKİMDEN ÖDEME ALINDI','KAPANDI'],
+  'DOSYA DURUMU':  ['','SİGORTAYA MÜRACAAT','TAHKİM KAYIT','TAHKİM İNCELEME','BİLİRKİŞİ','ARABULUCULUKTA','KARAR','İCRADA','TAMAMLANDI'],
 };
 
-// ─── State ───────────────────────────────────────────
+// ─── State ──────────────────────────────────────────────────────────────────
 let currentPage = 'dashboard';
-let dataCache   = {};   // { sheetName: { headers, data } }
-let modalState  = { sheet: null, rowIndex: null };
-let dtInstances = {};
+let dataCache   = {};
+let tableState  = {}; // {sheetName: {sort,dir,filter,chips,page}}
+let drawerState = {sheet:null, rowIndex:null};
+let confirmCb   = null;
 
-// ─── Navigation ──────────────────────────────────────
+// ─── Navigation ─────────────────────────────────────────────────────────────
 function nav(pageId, linkEl) {
-  // deactivate all
-  document.querySelectorAll('.sidebar a.nav-item').forEach(a => a.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-
+  document.querySelectorAll('.nav-link-item').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   if (linkEl) linkEl.classList.add('active');
-
-  const pageEl = document.getElementById('page-' + pageId);
+  else {
+    const found = document.querySelector(`[onclick*="nav('${pageId}'"]`);
+    if (found) found.classList.add('active');
+  }
+  const pageEl = document.getElementById('page-'+pageId);
   if (pageEl) pageEl.classList.add('active');
-
   currentPage = pageId;
 
-  // topbar
   const cfg = PAGE_CONFIG[pageId];
-  const titles = { dashboard:'Dashboard', search:'Genel Arama' };
-  const title = cfg ? cfg.title : (titles[pageId] || pageId);
   document.getElementById('topbarTitle').innerHTML =
-    (cfg ? `<i class="fas ${cfg.icon} me-1 text-muted"></i>` : '') + title;
+    (cfg ? `<i class="fas ${cfg.icon} me-2 text-muted"></i>` : '') +
+    (cfg ? cfg.title : ({dashboard:'Ana Sayfa',search:'Genel Arama'}[pageId]||pageId));
 
-  // Load sheet data if needed
-  if (cfg && !dataCache[cfg.sheet]) {
-    loadSheet(pageId, cfg.sheet);
-  }
-
-  if (pageId === 'dashboard') refreshDashboard();
-
+  if (cfg && !dataCache[cfg.sheet]) loadSheet(pageId, cfg.sheet);
+  if (pageId==='dashboard') refreshDashboard();
+  closeSidebar();
   return false;
 }
 
-// ─── Sheet loading ────────────────────────────────────
+// ─── Load sheet ─────────────────────────────────────────────────────────────
 function loadSheet(pageId, sheetName) {
-  const pageEl = document.getElementById('page-' + pageId);
-  pageEl.innerHTML = '<div class="spinner-box"><i class="fas fa-spinner fa-spin fa-2x"></i><div class="mt-2">Yükleniyor…</div></div>';
-
+  document.getElementById('page-'+pageId).innerHTML =
+    '<div class="spin-center"><i class="fas fa-spinner fa-spin fa-2x"></i><div style="margin-top:12px;font-size:.85rem">Yükleniyor…</div></div>';
   google.script.run
-    .withSuccessHandler(res => {
-      if (!res.success) { pageEl.innerHTML = errBox(res.error); return; }
-      dataCache[sheetName] = { headers: res.headers, data: res.data };
-      renderSheetPage(pageId, sheetName, res.headers, res.data);
-      updateBadge(sheetName, res.data.length);
+    .withSuccessHandler(res=>{
+      if (!res.success){document.getElementById('page-'+pageId).innerHTML=errBox(res.error);return;}
+      dataCache[sheetName]={headers:res.headers,data:res.data};
+      if (!tableState[sheetName]) tableState[sheetName]={sort:null,dir:'asc',filter:'',chip:'',page:1};
+      renderSheetPage(pageId,sheetName);
+      updateBadge(sheetName,res.data.length);
     })
-    .withFailureHandler(e => { pageEl.innerHTML = errBox(e.message); })
+    .withFailureHandler(e=>{document.getElementById('page-'+pageId).innerHTML=errBox(e.message);})
     .getSheetData(sheetName);
 }
 
 function reloadSheet(sheetName) {
-  const pageId = Object.keys(PAGE_CONFIG).find(k => PAGE_CONFIG[k].sheet === sheetName);
+  const pageId = Object.keys(PAGE_CONFIG).find(k=>PAGE_CONFIG[k].sheet===sheetName);
   if (!pageId) return;
   delete dataCache[sheetName];
-  if (dtInstances[sheetName]) { dtInstances[sheetName].destroy(); delete dtInstances[sheetName]; }
-  loadSheet(pageId, sheetName);
+  loadSheet(pageId,sheetName);
 }
 
-// ─── Render sheet page ────────────────────────────────
-function renderSheetPage(pageId, sheetName, headers, data) {
-  const cfg = PAGE_CONFIG[pageId];
-  const tableId = 'tbl_' + sheetName.replace(/\s/g,'_').replace(/[İıŞşĞğÜüÖöÇç]/g, c => c);
-  const isHasar = sheetName.includes('HASAR');
+// ─── Render sheet page ───────────────────────────────────────────────────────
+function renderSheetPage(pageId, sheetName) {
+  const cached = dataCache[sheetName];
+  const cfg    = PAGE_CONFIG[pageId];
+  const tCols  = TABLE_COLS[sheetName] || cached.headers.filter(h=>h&&!h.startsWith('Sütun')).slice(0,7);
+  const state  = tableState[sheetName];
 
-  // Skip purely empty/Sütun headers
-  const visHeaders = headers.filter(h => h && !h.startsWith('Sütun'));
+  // ── status chip options ──
+  const statusKey = cached.headers.includes('DURUM') ? 'DURUM' :
+                    cached.headers.includes('DOSYA DURUMU') ? 'DOSYA DURUMU' : null;
+  let chips = [];
+  if (statusKey) {
+    const vals = [...new Set(cached.data.map(r=>r[statusKey]).filter(Boolean))];
+    chips = vals.slice(0,6);
+  }
 
-  let html = `
-    <div class="panel">
-      <div class="panel-header">
-        <h6><i class="fas ${cfg.icon} me-1"></i>${cfg.title}
-          <span class="badge bg-secondary ms-1" style="font-size:.72rem">${data.length}</span>
-        </h6>
-        <button class="btn btn-primary btn-sm" onclick="openAdd('${sheetName}')">
-          <i class="fas fa-plus me-1"></i>Yeni Kayıt
-        </button>
-      </div>
-      <div class="panel-body p-0">
-        <div class="dt-container p-2">
-          <table id="${tableId}" class="table table-hover table-sm w-100">
-            <thead><tr>`;
-
-  visHeaders.forEach(h => { html += `<th>${h}</th>`; });
-  html += `<th style="width:70px">İşlem</th></tr></thead><tbody>`;
-
-  data.forEach(row => {
-    html += '<tr>';
-    visHeaders.forEach(h => {
-      let val = row[h] !== undefined ? String(row[h]) : '';
-      if (h === 'DURUM' || h === 'DOSYA DURUMU') {
-        html += `<td>${statusBadge(val)}</td>`;
-      } else {
-        html += `<td>${escHtml(val)}</td>`;
-      }
+  // ── filter data ──
+  let rows = [...cached.data];
+  if (state.filter) {
+    const q = state.filter.toLowerCase();
+    rows = rows.filter(r=>tCols.some(h=>String(r[h]||'').toLowerCase().includes(q)));
+  }
+  if (state.chip) {
+    rows = rows.filter(r=>String(r[statusKey]||'').includes(state.chip));
+  }
+  // ── sort ──
+  if (state.sort) {
+    rows.sort((a,b)=>{
+      const av=String(a[state.sort]||''), bv=String(b[state.sort]||'');
+      return state.dir==='asc' ? av.localeCompare(bv,'tr') : bv.localeCompare(av,'tr');
     });
-    html += `<td>
-      <button class="btn btn-outline-warning btn-mini me-1" title="Düzenle"
-              onclick="openEdit('${sheetName}',${row._rowIndex})">
-        <i class="fas fa-pen"></i>
+  }
+  // ── paginate ──
+  const PER_PAGE=25;
+  const total=rows.length, pages=Math.max(1,Math.ceil(total/PER_PAGE));
+  if (state.page>pages) state.page=1;
+  const pageRows = rows.slice((state.page-1)*PER_PAGE, state.page*PER_PAGE);
+
+  // ── build HTML ──
+  let html = `<div class="panel">
+    <div class="panel-head">
+      <h6><i class="fas ${cfg.icon} me-2"></i>${cfg.title}
+        <span style="background:#e8eaf0;color:#555;font-size:.68rem;padding:2px 8px;border-radius:10px;margin-left:6px">${total}</span>
+      </h6>
+      <button class="btn-navy" onclick="openAdd('${sheetName}')">
+        <i class="fas fa-plus me-2"></i>Yeni Kayıt
       </button>
-      <button class="btn btn-outline-danger btn-mini" title="Sil"
-              onclick="delRow('${sheetName}',${row._rowIndex})">
-        <i class="fas fa-trash"></i>
-      </button>
+    </div>
+    <div style="padding:12px 14px;border-bottom:1px solid #f0f2f8">
+      <div class="filter-bar">
+        <input type="text" placeholder="Tabloda ara…" value="${escAttr(state.filter)}"
+          oninput="setFilter('${sheetName}',this.value)" id="filter-${sheetName}">
+        ${chips.map(c=>`<span class="filter-chip${state.chip===c?' on':''}" onclick="setChip('${sheetName}','${escAttr(c)}')">${c}</span>`).join('')}
+        ${state.chip?`<span class="filter-chip on" onclick="setChip('${sheetName}','')"><i class="fas fa-times me-1"></i>Temizle</span>`:''}
+      </div>
+    </div>
+    <div class="tbl-wrap">
+    <table class="dtbl">
+    <thead><tr>
+  `;
+  tCols.forEach(h=>{
+    const isSort = state.sort===h;
+    const cls = isSort ? (state.dir==='asc'?'sort-asc':'sort-desc') : '';
+    html += `<th class="${cls}" onclick="toggleSort('${sheetName}','${escAttr(h)}')">${h}</th>`;
+  });
+  html += `<th style="width:60px;text-align:center">İşlem</th></tr></thead><tbody>`;
+
+  pageRows.forEach(row=>{
+    const ri = row._rowIndex;
+    html += `<tr onclick="openDrawer('${sheetName}',${ri})" id="row-${ri}">`;
+    tCols.forEach(h=>{
+      const v = String(row[h]||'');
+      if (h==='DURUM'||h==='DOSYA DURUMU') html += `<td>${statusBadge(v)}</td>`;
+      else html += `<td>${escHtml(v)}</td>`;
+    });
+    html += `<td class="td-actions" onclick="event.stopPropagation()">
+      <button class="btn-sm-icon" title="Düzenle" onclick="openEdit('${sheetName}',${ri})"><i class="fas fa-pen"></i></button>
+      <button class="btn-sm-icon danger" title="Sil" onclick="confirmDelete('${sheetName}',${ri})"><i class="fas fa-trash"></i></button>
     </td></tr>`;
   });
+  html += `</tbody></table></div>`;
 
-  html += `</tbody></table></div></div></div>`;
-  document.getElementById('page-' + pageId).innerHTML = html;
+  // ── pagination ──
+  html += `<div class="pager">
+    <span>${total===0?'Kayıt bulunamadı':`${(state.page-1)*PER_PAGE+1}–${Math.min(state.page*PER_PAGE,total)} / ${total} kayıt`}</span>
+    <div class="pager-btns">`;
+  html += `<button class="pager-btn" onclick="goPage('${sheetName}',${state.page-1})" ${state.page<=1?'disabled':''}>‹</button>`;
+  const start=Math.max(1,state.page-2), end=Math.min(pages,state.page+2);
+  for(let i=start;i<=end;i++) html+=`<button class="pager-btn${i===state.page?' active':''}" onclick="goPage('${sheetName}',${i})">${i}</button>`;
+  html += `<button class="pager-btn" onclick="goPage('${sheetName}',${state.page+1})" ${state.page>=pages?'disabled':''}>›</button>`;
+  html += `</div></div></div>`;
 
-  // DataTables
-  dtInstances[sheetName] = $('#' + tableId).DataTable({
-    language: {
-      search: 'Ara:', lengthMenu: '_MENU_ kayıt göster',
-      info: '_START_–_END_ / _TOTAL_ kayıt',
-      paginate: { previous: '‹', next: '›' },
-      zeroRecords: 'Kayıt bulunamadı', infoEmpty: 'Kayıt yok'
-    },
-    pageLength: 25,
-    scrollX: true,
-    order: [[0, 'asc']],
-    columnDefs: [{ orderable: false, targets: -1 }]
-  });
+  document.getElementById('page-'+pageId).innerHTML = html;
 }
 
-// ─── Add / Edit Modal ─────────────────────────────────
+// ─── Table controls ──────────────────────────────────────────────────────────
+function setFilter(sheetName, val) {
+  tableState[sheetName].filter = val;
+  tableState[sheetName].page = 1;
+  const pageId = Object.keys(PAGE_CONFIG).find(k=>PAGE_CONFIG[k].sheet===sheetName);
+  renderSheetPage(pageId,sheetName);
+  // keep focus
+  setTimeout(()=>{
+    const el=document.getElementById('filter-'+sheetName);
+    if(el){el.focus();el.setSelectionRange(val.length,val.length);}
+  },10);
+}
+
+function setChip(sheetName, val) {
+  tableState[sheetName].chip = val;
+  tableState[sheetName].page = 1;
+  const pageId = Object.keys(PAGE_CONFIG).find(k=>PAGE_CONFIG[k].sheet===sheetName);
+  renderSheetPage(pageId,sheetName);
+}
+
+function toggleSort(sheetName, col) {
+  const s = tableState[sheetName];
+  if (s.sort===col) s.dir = s.dir==='asc'?'desc':'asc';
+  else {s.sort=col;s.dir='asc';}
+  const pageId = Object.keys(PAGE_CONFIG).find(k=>PAGE_CONFIG[k].sheet===sheetName);
+  renderSheetPage(pageId,sheetName);
+}
+
+function goPage(sheetName, p) {
+  const cached=dataCache[sheetName];
+  if(!cached)return;
+  const pages=Math.max(1,Math.ceil(cached.data.length/25));
+  tableState[sheetName].page=Math.max(1,Math.min(p,pages));
+  const pageId=Object.keys(PAGE_CONFIG).find(k=>PAGE_CONFIG[k].sheet===sheetName);
+  renderSheetPage(pageId,sheetName);
+}
+
+// ─── Detail Drawer ───────────────────────────────────────────────────────────
+function openDrawer(sheetName, rowIndex) {
+  const cached=dataCache[sheetName];
+  if(!cached)return;
+  const row=cached.data.find(r=>r._rowIndex===rowIndex);
+  if(!row)return;
+  drawerState={sheet:sheetName,rowIndex};
+
+  const allHeaders=cached.headers.filter(h=>h&&!h.startsWith('Sütun'));
+  const groups=getFormGroups(sheetName,allHeaders);
+
+  let html='';
+  groups.forEach(g=>{
+    const flds=g.fields.filter(f=>allHeaders.includes(f));
+    if(!flds.length)return;
+    html+=`<div class="field-group"><div class="field-group-title">${g.title}</div><div class="field-row">`;
+    flds.forEach(f=>{
+      const v=String(row[f]||'');
+      const full=f==='ADRES'||f.includes('DURUM')||flds.length===1;
+      if(full) html+='</div><div class="field-row full">';
+      html+=`<div class="field-item">
+        <label>${f}</label>
+        <div class="val${v?'':' empty'}">${v||'—'}</div>
+      </div>`;
+      if(full) html+='</div><div class="field-row">';
+    });
+    html+='</div></div>';
+  });
+
+  // highlight row
+  document.querySelectorAll('.dtbl tbody tr').forEach(r=>r.classList.remove('selected'));
+  const rowEl=document.getElementById('row-'+rowIndex);
+  if(rowEl)rowEl.classList.add('selected');
+
+  const nameField=row['ARAÇ SAHİBİ']||row['DAVACI']||row['SİGORTALI']||row['PLAKA']||'Kayıt';
+  document.getElementById('drawerTitle').textContent=String(nameField);
+  document.getElementById('drawerBody').innerHTML=html;
+  document.getElementById('detailDrawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('detailDrawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.querySelectorAll('.dtbl tbody tr').forEach(r=>r.classList.remove('selected'));
+  drawerState={sheet:null,rowIndex:null};
+}
+
+function openEditFromDrawer() {
+  if(!drawerState.sheet)return;
+  openEdit(drawerState.sheet,drawerState.rowIndex);
+}
+
+function delFromDrawer() {
+  if(!drawerState.sheet)return;
+  confirmDelete(drawerState.sheet,drawerState.rowIndex);
+}
+
+// ─── Confirm Dialog ──────────────────────────────────────────────────────────
+function confirmDelete(sheetName, rowIndex) {
+  confirmCb = ()=>{
+    closeConfirm();
+    google.script.run
+      .withSuccessHandler(res=>{
+        if(res.success){
+          toast(res.message,'success');
+          closeDrawer();
+          reloadSheet(sheetName);
+          if(currentPage==='dashboard')refreshDashboard();
+        } else toast('Hata: '+res.error,'danger');
+      })
+      .withFailureHandler(e=>toast('Hata: '+e.message,'danger'))
+      .deleteRow(sheetName,rowIndex);
+  };
+  document.getElementById('confirmYesBtn').onclick=confirmCb;
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  confirmCb=null;
+}
+
+// ─── Add / Edit Modal ────────────────────────────────────────────────────────
+let modalState={sheet:null,rowIndex:null};
+
 function openAdd(sheetName) {
-  modalState = { sheet: sheetName, rowIndex: null };
-  document.getElementById('modalTitle').textContent = 'Yeni Kayıt — ' + sheetName;
-  document.getElementById('modalBody').innerHTML = buildForm(sheetName, null);
+  modalState={sheet:sheetName,rowIndex:null};
+  document.getElementById('modalTitle').textContent='Yeni Kayıt — '+sheetName;
+  document.getElementById('modalBody').innerHTML=buildForm(sheetName,null);
   new bootstrap.Modal(document.getElementById('recModal')).show();
 }
 
 function openEdit(sheetName, rowIndex) {
-  const cached = dataCache[sheetName];
-  if (!cached) return;
-  const row = cached.data.find(r => r._rowIndex === rowIndex);
-  if (!row) return;
-  modalState = { sheet: sheetName, rowIndex: rowIndex };
-  document.getElementById('modalTitle').textContent = 'Kayıt Düzenle — ' + sheetName;
-  document.getElementById('modalBody').innerHTML = buildForm(sheetName, row);
+  const cached=dataCache[sheetName];
+  if(!cached)return;
+  const row=cached.data.find(r=>r._rowIndex===rowIndex);
+  if(!row)return;
+  modalState={sheet:sheetName,rowIndex};
+  document.getElementById('modalTitle').textContent='Kayıt Düzenle — '+sheetName;
+  document.getElementById('modalBody').innerHTML=buildForm(sheetName,row);
   new bootstrap.Modal(document.getElementById('recModal')).show();
 }
 
 function buildForm(sheetName, rowData) {
-  const cached = dataCache[sheetName];
-  if (!cached) return '<p>Veri yüklenemedi.</p>';
+  const cached=dataCache[sheetName];
+  if(!cached)return'<p>Veri yüklenemedi.</p>';
+  const allHeaders=cached.headers.filter(h=>h&&!h.startsWith('Sütun')&&h!=='SAYI'&&h!=='S NO');
+  const groups=getFormGroups(sheetName,allHeaders);
+  let html='';
 
-  const headers = cached.headers.filter(h => h && !h.startsWith('Sütun') &&
-                                            h !== 'SAYI' && h !== 'S NO');
-  let html = '<div class="row g-2">';
-
-  headers.forEach(h => {
-    const val = rowData ? (rowData[h] !== undefined ? rowData[h] : '') : '';
-    const isDate   = DATE_FIELDS.has(h);
-    const isMoney  = h.includes('BEDEL') || h.includes('ÖDEME') || h.includes('ÜCRET') || h === 'GELEN BEDEL2';
-    const selOpts  = SELECT_FIELDS[h];
-    const isWide   = h === 'ADRES' || h.includes('NOT');
-
-    html += `<div class="${isWide ? 'col-12' : 'col-md-6 col-lg-4'}">`;
-    html += `<label class="form-label">${h}</label>`;
-
-    if (selOpts) {
-      html += `<select class="form-select form-select-sm" name="${h}">`;
-      selOpts.forEach(opt => {
-        html += `<option value="${escAttr(opt)}"${val === opt ? ' selected' : ''}>${opt || '— Seçiniz —'}</option>`;
-      });
-      html += '</select>';
-    } else if (isDate) {
-      html += `<input type="date" class="form-control form-control-sm" name="${h}" value="${toInputDate(val)}">`;
-    } else if (isMoney) {
-      html += `<div class="input-group input-group-sm">
-        <span class="input-group-text">₺</span>
-        <input type="number" step="0.01" class="form-control" name="${h}" value="${escAttr(String(val))}">
-      </div>`;
-    } else if (h === 'T.C/V.N' || h === 'TC' || h === 'TC-VN') {
-      html += `<input type="text" class="form-control form-control-sm" name="${h}"
-               value="${escAttr(String(val))}" maxlength="11" placeholder="TC kimlik / Vergi no">`;
-    } else {
-      html += `<input type="text" class="form-control form-control-sm" name="${h}" value="${escAttr(String(val))}">`;
-    }
-    html += '</div>';
+  groups.forEach(g=>{
+    const flds=g.fields.filter(f=>allHeaders.includes(f));
+    if(!flds.length)return;
+    html+=`<div class="form-section"><div class="form-section-title">${g.title}</div>`;
+    html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">`;
+    flds.forEach(h=>{
+      const val=rowData?(rowData[h]!==undefined?rowData[h]:''):'';
+      const isDate=DATE_FIELDS.has(h);
+      const isMoney=h.includes('BEDEL')||h.includes('ÖDEME')||h.includes('ÜCRET')||h==='GELEN BEDEL2';
+      const selOpts=SELECT_FIELDS[h];
+      const isWide=h==='ADRES'||h.includes('NOT')||h==='DURUM'||h==='DOSYA DURUMU';
+      html+=`<div${isWide?' style="grid-column:1/-1"':''}>`;
+      html+=`<label class="form-label">${h}</label>`;
+      if(selOpts){
+        html+=`<select class="form-select form-select-sm" name="${escAttr(h)}">`;
+        selOpts.forEach(opt=>html+=`<option value="${escAttr(opt)}"${val===opt?' selected':''}>${opt||'— Seçiniz —'}</option>`);
+        html+=`</select>`;
+      } else if(isDate){
+        html+=`<input type="date" class="form-control form-control-sm" name="${escAttr(h)}" value="${toInputDate(val)}">`;
+      } else if(isMoney){
+        html+=`<div style="position:relative">
+          <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:#999;font-size:.8rem">₺</span>
+          <input type="number" step="0.01" class="form-control form-control-sm" name="${escAttr(h)}" value="${escAttr(String(val))}" style="padding-left:22px">
+        </div>`;
+      } else if(h==='T.C/V.N'||h==='TC'||h==='TC-VN'){
+        html+=`<input type="text" class="form-control form-control-sm" name="${escAttr(h)}" value="${escAttr(String(val))}" maxlength="11" placeholder="TC / Vergi no">`;
+      } else {
+        html+=`<input type="text" class="form-control form-control-sm" name="${escAttr(h)}" value="${escAttr(String(val))}">`;
+      }
+      html+=`</div>`;
+    });
+    html+=`</div></div>`;
   });
-
-  html += '</div>';
   return html;
 }
 
-// ─── Save ─────────────────────────────────────────────
+function getFormGroups(sheetName, allHeaders) {
+  const preset = FORM_GROUPS[sheetName] || FORM_GROUPS['_dava'];
+  if (preset) {
+    const defined = new Set(preset.flatMap(g=>g.fields));
+    const rest = allHeaders.filter(h=>!defined.has(h)&&h!=='SAYI'&&h!=='S NO');
+    const groups = [...preset];
+    if (rest.length) groups.push({title:'Diğer Bilgiler',fields:rest});
+    return groups;
+  }
+  return [{title:'Bilgiler', fields:allHeaders}];
+}
+
+// ─── Save ────────────────────────────────────────────────────────────────────
 function saveRecord() {
-  const form = document.getElementById('modalBody');
-  const inputs = form.querySelectorAll('[name]');
-  const data = {};
-  inputs.forEach(el => { data[el.name] = el.value; });
+  const form=document.getElementById('modalBody');
+  const inputs=form.querySelectorAll('[name]');
+  const data={};
+  inputs.forEach(el=>{data[el.name]=el.value;});
 
-  const btn = document.getElementById('modalSaveBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Kaydediliyor…';
+  const btn=document.getElementById('modalSaveBtn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="fas fa-spinner fa-spin me-2"></i>Kaydediliyor…';
 
-  const done = res => {
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-save me-1"></i>Kaydet';
-    if (res.success) {
+  const done=res=>{
+    btn.disabled=false;
+    btn.innerHTML='<i class="fas fa-save me-2"></i>Kaydet';
+    if(res.success){
       bootstrap.Modal.getInstance(document.getElementById('recModal'))?.hide();
-      toast(res.message, 'success');
+      toast(res.message,'success');
       reloadSheet(modalState.sheet);
-      if (currentPage === 'dashboard') refreshDashboard();
-    } else {
-      toast('Hata: ' + res.error, 'danger');
-    }
+      if(currentPage==='dashboard')refreshDashboard();
+    } else toast('Hata: '+res.error,'danger');
   };
-  const fail = e => {
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-save me-1"></i>Kaydet';
-    toast('Bağlantı hatası: ' + e.message, 'danger');
+  const fail=e=>{
+    btn.disabled=false;
+    btn.innerHTML='<i class="fas fa-save me-2"></i>Kaydet';
+    toast('Bağlantı hatası: '+e.message,'danger');
   };
 
-  if (modalState.rowIndex) {
+  if(modalState.rowIndex){
     google.script.run.withSuccessHandler(done).withFailureHandler(fail)
-      .updateRow(modalState.sheet, modalState.rowIndex, data);
+      .updateRow(modalState.sheet,modalState.rowIndex,data);
   } else {
     google.script.run.withSuccessHandler(done).withFailureHandler(fail)
-      .addRow(modalState.sheet, data);
+      .addRow(modalState.sheet,data);
   }
 }
 
-// ─── Delete ───────────────────────────────────────────
-function delRow(sheetName, rowIndex) {
-  if (!confirm('Bu kaydı silmek istediğinizden emin misiniz?')) return;
-  google.script.run
-    .withSuccessHandler(res => {
-      if (res.success) {
-        toast(res.message, 'success');
-        reloadSheet(sheetName);
-        if (currentPage === 'dashboard') refreshDashboard();
-      } else toast('Hata: ' + res.error, 'danger');
-    })
-    .withFailureHandler(e => toast('Hata: ' + e.message, 'danger'))
-    .deleteRow(sheetName, rowIndex);
-}
-
-// ─── Dashboard ────────────────────────────────────────
+// ─── Dashboard ───────────────────────────────────────────────────────────────
 function refreshDashboard() {
   google.script.run
-    .withSuccessHandler(res => {
-      if (!res.success) return;
+    .withSuccessHandler(res=>{
+      if(!res.success)return;
       document.getElementById('s-total').textContent  = res.totalCases;
       document.getElementById('s-active').textContent = res.activeCount;
       document.getElementById('s-done').textContent   = res.completedCount;
-      const hasar = (res.sheetCounts['OTO HASAR'] || 0) + (res.sheetCounts['OTO DIŞI HASAR'] || 0);
+      const hasar=(res.sheetCounts['OTO HASAR']||0)+(res.sheetCounts['OTO DIŞI HASAR']||0);
       document.getElementById('s-hasar').textContent  = hasar;
+      Object.entries(res.sheetCounts).forEach(([n,c])=>updateBadge(n,c));
 
-      // Update sidebar badges
-      Object.entries(res.sheetCounts).forEach(([name, count]) => updateBadge(name, count));
-
-      // Category list
-      const rows = Object.entries(res.sheetCounts).map(([name, count]) => `
-        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-          <span style="font-size:.85rem">${name}</span>
-          <span class="badge rounded-pill" style="background:${count>0?'#1a3c5e':'#ccc'};font-size:.72rem">${count}</span>
+      const html=Object.entries(res.sheetCounts).map(([n,c])=>`
+        <div class="cat-row">
+          <span class="cat-name">${n}</span>
+          <span class="cat-pill">${c}</span>
         </div>`).join('');
-      document.getElementById('dash-categories').innerHTML = rows || '<p class="text-muted">Veri bulunamadı</p>';
+      document.getElementById('dash-categories').innerHTML=html||'<p style="color:#bbb;font-size:.83rem">Veri bulunamadı</p>';
     })
-    .withFailureHandler(() => {})
+    .withFailureHandler(()=>{})
     .getDashboardStats();
 }
 
-// ─── Search ───────────────────────────────────────────
+// ─── Search ──────────────────────────────────────────────────────────────────
 function runSearch() {
-  const q = document.getElementById('searchQ').value.trim();
-  if (!q) return;
-  const out = document.getElementById('searchOut');
-  out.innerHTML = '<div class="spinner-box"><i class="fas fa-spinner fa-spin"></i> Aranıyor…</div>';
-
+  const q=document.getElementById('searchQ').value.trim();
+  if(!q)return;
+  const out=document.getElementById('searchOut');
+  out.innerHTML='<div class="spin-center"><i class="fas fa-spinner fa-spin"></i></div>';
   google.script.run
-    .withSuccessHandler(res => {
-      if (!res.success) { out.innerHTML = errBox(res.error); return; }
-      if (!res.results.length) {
-        out.innerHTML = '<div class="alert alert-info mt-2">Sonuç bulunamadı.</div>';
+    .withSuccessHandler(res=>{
+      if(!res.success){out.innerHTML=errBox(res.error);return;}
+      if(!res.results.length){
+        out.innerHTML='<div style="text-align:center;padding:30px;color:#bbb"><i class="fas fa-search fa-2x"></i><div style="margin-top:8px">Sonuç bulunamadı</div></div>';
         return;
       }
-
-      // Group by sheet
-      const groups = {};
-      res.results.forEach(r => {
-        if (!groups[r._sheet]) groups[r._sheet] = [];
+      const groups={};
+      res.results.forEach(r=>{
+        if(!groups[r._sheet])groups[r._sheet]=[];
         groups[r._sheet].push(r);
       });
-
-      let html = `<p class="text-muted mt-2" style="font-size:.82rem">
-        <strong>${res.results.length}</strong> sonuç bulundu.</p>`;
-
-      Object.entries(groups).forEach(([sheet, rows]) => {
-        const keys = Object.keys(rows[0]).filter(k => !k.startsWith('_') && !k.startsWith('Sütun'));
-        html += `<h6 class="mt-3 text-muted" style="font-size:.78rem">${sheet} (${rows.length})</h6>
-          <div class="table-responsive">
-          <table class="table table-sm table-hover" style="font-size:.8rem">
-          <thead><tr>${keys.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>`;
-        rows.forEach(row => {
-          html += '<tr>' + keys.map(k => {
-            const v = String(row[k] || '');
-            const hi = v.toLowerCase().includes(q.toLowerCase())
-              ? v.replace(new RegExp(q, 'gi'), m => `<mark>${m}</mark>`) : v;
+      let html=`<p style="color:#888;font-size:.82rem;margin-bottom:12px"><strong>${res.results.length}</strong> sonuç bulundu</p>`;
+      Object.entries(groups).forEach(([sheet,rows])=>{
+        const keys=Object.keys(rows[0]).filter(k=>!k.startsWith('_')&&!k.startsWith('Sütun'));
+        html+=`<div class="panel" style="margin-bottom:12px">
+          <div class="panel-head"><h6>${sheet} <span style="font-size:.72rem;color:#888">${rows.length} kayıt</span></h6></div>
+          <div class="tbl-wrap"><table class="dtbl"><thead><tr>
+          ${keys.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>`;
+        rows.forEach(row=>{
+          html+='<tr>'+keys.map(k=>{
+            const v=String(row[k]||'');
+            const re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
+            const hi=v.replace(re,m=>`<mark>${m}</mark>`);
             return `<td>${hi}</td>`;
-          }).join('') + '</tr>';
+          }).join('')+'</tr>';
         });
-        html += '</tbody></table></div>';
+        html+='</tbody></table></div></div>';
       });
-      out.innerHTML = html;
+      out.innerHTML=html;
     })
-    .withFailureHandler(e => { out.innerHTML = errBox(e.message); })
+    .withFailureHandler(e=>{out.innerHTML=errBox(e.message);})
     .searchAll(q);
 }
 
-// ─── Init Sheets ─────────────────────────────────────
+// ─── Init sheets ─────────────────────────────────────────────────────────────
 function doInitSheets() {
-  if (!confirm('Eksik sayfalar oluşturulacak ve başlıklar ayarlanacak. Devam edilsin mi?')) return;
-  toast('Sayfalar hazırlanıyor…', 'info');
+  if(!confirm('Eksik sayfalar oluşturulacak. Devam edilsin mi?'))return;
+  toast('Sayfalar hazırlanıyor…','info');
   google.script.run
-    .withSuccessHandler(res => {
-      if (res.success) toast(res.message, 'success');
-      else toast('Hata: ' + res.error, 'danger');
+    .withSuccessHandler(res=>{
+      if(res.success)toast(res.message,'success');
+      else toast('Hata: '+res.error,'danger');
     })
-    .withFailureHandler(e => toast('Hata: ' + e.message, 'danger'))
+    .withFailureHandler(e=>toast('Hata: '+e.message,'danger'))
     .initializeSheets();
 }
 
-// ─── Helpers ─────────────────────────────────────────
-function updateBadge(sheetName, count) {
-  const el = document.getElementById('cnt-' + sheetName);
-  if (el) el.textContent = count;
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function updateBadge(sheetName,count) {
+  const el=document.getElementById('cnt-'+sheetName);
+  if(el)el.textContent=count;
 }
 
 function statusBadge(val) {
-  if (!val) return '';
-  const v = val.toUpperCase();
-  let cls = 'default';
-  if (v.includes('İCRA'))          cls = 'icra';
-  else if (v.includes('TAHKİM'))   cls = 'tahkim';
-  else if (v.includes('ARABULUC')) cls = 'arabuluculuk';
-  else if (v.includes('TAMAMLAND') || v.includes('ALINDI') || v.includes('KAPAND')) cls = 'tamamlandi';
-  else if (v.includes('HUKUKİ') || v.includes('BAŞLAT')) cls = 'hukuki';
-  return `<span class="sbadge sbadge-${cls}">${val}</span>`;
+  if(!val)return'';
+  const v=val.toUpperCase();
+  let cls='s-diger';
+  if(v.includes('İCRA'))         cls='s-icra';
+  else if(v.includes('TAHKİM'))  cls='s-tahkim';
+  else if(v.includes('ARABULUC'))cls='s-arb';
+  else if(v.includes('TAMAMLAND')||v.includes('ALINDI')||v.includes('KAPAND'))cls='s-tamam';
+  else if(v.includes('HUKUKİ')||v.includes('BAŞLAT'))cls='s-hukuki';
+  else if(v.includes('BEKL')||v.includes('İNCELEM'))cls='s-bekle';
+  return`<span class="sbadge ${cls}">${val}</span>`;
 }
 
 function toInputDate(val) {
-  if (!val) return '';
-  // Convert dd.MM.yyyy → yyyy-MM-dd
-  const m = String(val).match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+  if(!val)return'';
+  const m=String(val).match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if(m)return`${m[3]}-${m[2]}-${m[1]}`;
   return val;
 }
 
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function escAttr(s) {
-  return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function escAttr(s){return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function errBox(msg){return`<div style="background:#fee2e2;color:#991b1b;padding:14px;border-radius:8px;margin:12px"><i class="fas fa-circle-xmark me-2"></i>${msg}</div>`}
 
-function errBox(msg) {
-  return `<div class="alert alert-danger m-3"><i class="fas fa-circle-xmark me-1"></i>${msg}</div>`;
-}
-
-function toast(msg, type) {
-  const id = 'toast_' + Date.now();
-  const icons = { success:'check-circle', danger:'circle-xmark', info:'circle-info', warning:'triangle-exclamation' };
-  document.querySelector('.toast-container').insertAdjacentHTML('beforeend', `
-    <div id="${id}" class="toast align-items-center text-white bg-${type} border-0 mb-2" role="alert">
-      <div class="d-flex">
-        <div class="toast-body"><i class="fas fa-${icons[type]||'info'} me-1"></i>${msg}</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
+function toast(msg,type) {
+  const id='t'+Date.now();
+  const icons={success:'check-circle',danger:'circle-xmark',info:'circle-info'};
+  document.getElementById('toastWrap').insertAdjacentHTML('beforeend',`
+    <div id="${id}" class="toast-item ${type}">
+      <i class="fas fa-${icons[type]||'info'} ti fa-lg"></i>
+      <span style="flex:1">${msg}</span>
+      <button onclick="this.closest('.toast-item').remove()" style="background:none;border:none;color:#aaa;cursor:pointer;padding:0 4px">×</button>
     </div>`);
-  const el = new bootstrap.Toast(document.getElementById(id), { delay: 4500 });
-  el.show();
-  setTimeout(() => document.getElementById(id)?.remove(), 5500);
+  setTimeout(()=>document.getElementById(id)?.remove(),5000);
 }
 
-// ─── Boot ─────────────────────────────────────────────
-document.getElementById('todayDate').textContent = new Date().toLocaleDateString('tr-TR', {
-  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-});
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
+function closeSidebar(){if(window.innerWidth<=768)document.getElementById('sidebar').classList.remove('open')}
+
+// ─── Boot ─────────────────────────────────────────────────────────────────
+document.getElementById('todayDate').textContent=new Date().toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+if(window.innerWidth<=768) {
+  document.getElementById('mobileMenuBtn').style.display='block';
+}
 
 refreshDashboard();
 </script>
